@@ -1,11 +1,10 @@
-
 public class Order {
     private String medicineName;
     private int quantity;
 
     public Order(String medName, String dose, String repeat) {
     	medicineName = medName;
-    	quantity = Integer.parseInt(dose)*Integer.parseInt(repeat);
+    	quantity = Integer.parseInt(dose) * Integer.parseInt(repeat);
     }
 
     public String getMedName() {

@@ -12,6 +12,7 @@ public class Medicine {
     private Medicine left;
     private Medicine right;
     private int height;
+    private int heightDiff;
     private LinkedList<Shipment> shipments = new LinkedList<>();
 
     public Medicine(String name, int stock, LocalDate expiryDate) {
@@ -29,13 +30,53 @@ public class Medicine {
     	//TODO: remove the shipments that are inferior expirydate to the current date
     }
 
-    private class Shipment {
+    public LinkedList<Shipment> getShipments() {
+        return shipments;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Medicine getLeft() {
+        return left;
+    }
+
+    public Medicine getRight() {
+        return right;
+    }
+
+    public void setLeft(Medicine left) {
+        this.left = left;
+    }
+
+    public void setRight(Medicine right) {
+        this.right = right;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    public class Shipment {
         private int stock;
         private LocalDate expiryDate;
 
         Shipment(int stock, LocalDate expiryDate) {
             this.stock = stock;
             this.expiryDate = expiryDate;
+        }
+
+        public int getStock() {
+            return stock;
+        }
+
+        public LocalDate getExpiryDate() {
+            return expiryDate;
         }
     }
 }
