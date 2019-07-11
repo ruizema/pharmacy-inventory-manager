@@ -28,13 +28,25 @@ public class MedTree {
         current.setHeight(1 + Math.max(nodeHeight(current.getLeft()), nodeHeight(current.getRight())));
     }
 
-    // TODO: removeMed
     public void removeMed(Medicine remove) {
-        removeMed(root, remove);
+        removeMed(root, remove, null, "");
     }
 
-    private void removeMed(Medicine current, Medicine remove) {
-
+    private void removeMed(Medicine current, Medicine remove, Medicine parent, String relation) {
+        if (current.equals(remove)) {
+            if (relation.equals("left")) {
+                parent.setLeft(null);
+            } else if (relation.equals("right")) {
+                parent.setRight(null);
+            }
+        } else {
+            int comparison = remove.getName().compareTo(current.getName());
+            if (comparison < 0) {
+                removeMed(current.getLeft(), remove, current, "left");
+            } else {
+                removeMed(current.getRight(), remove, current, "right");
+            }
+        }
     }
 
     public void insertMed(Medicine inserted) {
@@ -55,6 +67,8 @@ public class MedTree {
             if (med.getLeft() != null) {
                 search(name, med.getLeft());
             }
+        } else {
+            return med;
         }
         return med;
     }
@@ -68,7 +82,7 @@ public class MedTree {
         if (search == null) {
             return false;
         } else {
-            return search(name).getName().equals(name);
+            return search.getName().equals(name);
         }
     }
 
@@ -111,7 +125,7 @@ public class MedTree {
                 removeExpired(currentDate, med.getLeft());
             }
             for (Medicine.Shipment shipment : med.getShipments()) {
-                if (currentDate.compareTo(shipment.getExpiryDate()) < 0) {
+                if (currentDate.compareTo(shipment.getExpiryDate()) > 0) {
                     med.removeShipment(shipment);
                 }
             }

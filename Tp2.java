@@ -39,10 +39,13 @@ public class Tp2 {
                         orders.clear();
                     }
                     medicines.removeExpired(LocalDate.parse(currentDate));
+                    if (line.length <= 2) {
+                        scanner.nextLine();
+                    }
                     break;
                 case "APPROV":
                     do {
-                        String[] medElement = scanner.nextLine().split(" ");
+                        String[] medElement = scanner.nextLine().split("\\s+");
                         String name = medElement[0];
                         int stock = Integer.parseInt(medElement[1]);
                         LocalDate expiryDate = LocalDate.parse(medElement[2]);
@@ -68,6 +71,10 @@ public class Tp2 {
                         if (medicines.contains(presElement[0])) {
                             int toTake = Integer.parseInt(presElement[1]) * Integer.parseInt(presElement[2]);
                             Medicine med = medicines.search(presElement[0]);
+                            if (med.getTotalStock() < toTake) {
+                                orders.add(new Order(presElement[0], presElement[1], presElement[2]));
+                                writer.write(medPres.replace('\t', ' ') + " COMMANDE\n");
+                            }
                             LinkedList<Medicine.Shipment> shipments = med.getShipments();
                             Iterator<Medicine.Shipment> iterator = shipments.listIterator();
                             Medicine.Shipment shipment = iterator.next();
@@ -87,9 +94,6 @@ public class Tp2 {
                                 } else {
                                     break;
                                 }
-                            }
-                            if (toTake > 0) {
-                                // TODO: Make an order
                             }
                             writer.write(medPres.replace('\t', ' ') + " OK\n");
                         } else {

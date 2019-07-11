@@ -9,6 +9,7 @@ public class Medicine {
     private Medicine right;
     private int height;
     private LinkedList<Shipment> shipments = new LinkedList<>();
+    private int totalStock = 0;
 
     public Medicine(String name, int stock, LocalDate expiryDate) {
         this.name = name;
@@ -19,9 +20,11 @@ public class Medicine {
     public void addShipment(int stock, LocalDate expiryDate) {
         shipments.add(new Shipment(stock, expiryDate));
         shipments.sort(Comparator.comparing(Shipment::getExpiryDate));
+        totalStock += stock;
     }
 
     public void removeShipment(Shipment shipment) {
+        totalStock -= shipment.getStock();
         shipments.remove(shipment);
     }
 
@@ -57,6 +60,10 @@ public class Medicine {
         this.height = height;
     }
 
+    public int getTotalStock() {
+        return totalStock;
+    }
+
     public class Shipment {
         private int stock;
         private LocalDate expiryDate;
@@ -71,6 +78,7 @@ public class Medicine {
         }
 
         public void setStock(int stock) {
+            totalStock += stock - this.stock;
             this.stock = stock;
         }
 
