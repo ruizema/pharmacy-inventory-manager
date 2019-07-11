@@ -17,7 +17,7 @@ public class Tp2 {
         String currentDate = "YYYY-MM-DD";
 
         while (scanner.hasNext()) {
-            String[] line = scanner.nextLine().split(" "); // DOUBT
+            String[] line = scanner.nextLine().split(" ");
             switch (line[0]) {
                 case "DATE":
                     currentDate = line[1];
@@ -25,13 +25,20 @@ public class Tp2 {
                         writer.write(currentDate + " OK" + "\n");
                     } else {
                         writer.write(currentDate + " COMMANDES :" + "\n");
+                        HashMap<String, Integer> orderOutput = new HashMap<>();
                         for (Order order: orders) {
-                            writer.write(order.getMedName() + " " + order.getQuantity() + "\n");
+                            int quantity = order.getQuantity();
+                            if (orderOutput.containsKey(order.getMedName())) {
+                                quantity += orderOutput.get(order.getMedName());
+                            }
+                            orderOutput.put(order.getMedName(), quantity);
                         }
-                        // TODO: Merge orders
+                        for (String orderName : orderOutput.keySet()) {
+                            writer.write(orderName + '\t' + orderOutput.get(orderName) + '\n');
+                        }
                         orders.clear();
                     }
-                    // TODO: Get rid of expiring medicine
+                    medicines.removeExpired(LocalDate.parse(currentDate));
                     break;
                 case "APPROV":
                     do {
@@ -59,10 +66,33 @@ public class Tp2 {
                         String medPres = scanner.nextLine();
                         String[] presElement = medPres.split("\\s+");
                         if (medicines.contains(presElement[0])) {
-                            // TODO: Remove appropriate quantity from earlier shipment
+                            int toTake = Integer.parseInt(presElement[1]) * Integer.parseInt(presElement[2]);
+                            Medicine med = medicines.search(presElement[0]);
+                            LinkedList<Medicine.Shipment> shipments = med.getShipments();
+                            Iterator<Medicine.Shipment> iterator = shipments.listIterator();
+                            Medicine.Shipment shipment = iterator.next();
+                            while (toTake > 0) {
+                                int existing = shipment.getStock();
+                                int taken = Math.min(existing, toTake);
+                                shipment.setStock(existing - taken);
+                                toTake -= taken;
+                                if (shipment.getStock() == 0) {
+                                    shipments.remove(shipment);
+                                }
+                                if (shipments.isEmpty()) {
+                                    medicines.removeMed(med);
+                                }
+                                if (iterator.hasNext()) {
+                                    shipment = iterator.next();
+                                } else {
+                                    break;
+                                }
+                            }
+                            if (toTake > 0) {
+                                // TODO: Make an order
+                            }
                             writer.write(medPres.replace('\t', ' ') + " OK\n");
                         } else {
-                            System.out.println(Arrays.toString(presElement));
                             orders.add(new Order(presElement[0], presElement[1], presElement[2]));
                             writer.write(medPres.replace('\t', ' ') + " COMMANDE\n");
                         }

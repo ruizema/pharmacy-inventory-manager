@@ -1,5 +1,7 @@
+import java.time.LocalDate;
+
 public class MedTree {
-    public Medicine root;
+    private Medicine root;
 
     private void insertMed(Medicine current, Medicine inserted) {
         if (root == null) {
@@ -24,12 +26,15 @@ public class MedTree {
         }
 
         current.setHeight(1 + Math.max(nodeHeight(current.getLeft()), nodeHeight(current.getRight())));
+    }
 
-        /*
-        if (Math.abs(current.getLeft().getHeight() - current.getRight().getHeight()) > 1) {
-            // TODO: Rotations
-        }
-        */
+    // TODO: removeMed
+    public void removeMed(Medicine remove) {
+        removeMed(root, remove);
+    }
+
+    private void removeMed(Medicine current, Medicine remove) {
+
     }
 
     public void insertMed(Medicine inserted) {
@@ -96,8 +101,27 @@ public class MedTree {
                 right = printStocks(med.getRight());
             }
             output += left + middle + right;
-            System.out.println(output);
         }
         return output;
+    }
+
+    private void removeExpired(LocalDate currentDate, Medicine med) {
+        if (med != null) {
+            if (med.getLeft() != null) {
+                removeExpired(currentDate, med.getLeft());
+            }
+            for (Medicine.Shipment shipment : med.getShipments()) {
+                if (currentDate.compareTo(shipment.getExpiryDate()) < 0) {
+                    med.removeShipment(shipment);
+                }
+            }
+            if (med.getRight() != null) {
+                removeExpired(currentDate, med.getRight());
+            }
+        }
+    }
+
+    public void removeExpired(LocalDate currentDate) {
+        removeExpired(currentDate, root);
     }
 }

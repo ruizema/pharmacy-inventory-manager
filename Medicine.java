@@ -1,18 +1,13 @@
 import java.time.LocalDate;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
-
-/****
- *Need a remove stock function
- *Need a display the medicine function : "medicine-name stock expiry-date"
- *----> to write the stock in main
- */
 
 public class Medicine {
     private String name;
     private Medicine left;
     private Medicine right;
     private int height;
-    private int heightDiff;
     private LinkedList<Shipment> shipments = new LinkedList<>();
 
     public Medicine(String name, int stock, LocalDate expiryDate) {
@@ -22,12 +17,12 @@ public class Medicine {
     }
 
     public void addShipment(int stock, LocalDate expiryDate) {
-        // TODO: add shipment to appropriate spot in the list according to expiry date
         shipments.add(new Shipment(stock, expiryDate));
+        shipments.sort(Comparator.comparing(Shipment::getExpiryDate));
     }
 
-    public void removeShipment(String currentDate) {
-    	//TODO: remove the shipments that are inferior expirydate to the current date
+    public void removeShipment(Shipment shipment) {
+        shipments.remove(shipment);
     }
 
     public LinkedList<Shipment> getShipments() {
@@ -73,6 +68,10 @@ public class Medicine {
 
         public int getStock() {
             return stock;
+        }
+
+        public void setStock(int stock) {
+            this.stock = stock;
         }
 
         public LocalDate getExpiryDate() {
